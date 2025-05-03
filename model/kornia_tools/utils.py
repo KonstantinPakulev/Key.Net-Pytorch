@@ -3,9 +3,10 @@
 import kornia
 import torch
 import torch.nn.functional as F
-from kornia.filters import filter2D
-from kornia.feature.laf import normalize_laf, denormalize_laf, scale_laf, raise_error_if_laf_is_not_valid, \
+from kornia.filters import filter2d
+from kornia.feature.laf import normalize_laf, denormalize_laf, scale_laf, \
     get_laf_scale, generate_patch_grid_from_normalized_LAF
+from kornia.core.check import KORNIA_CHECK_SHAPE
 
 
 def laf_from_center_scale_ori(xy: torch.Tensor, scale: torch.Tensor, ori: torch.Tensor) -> torch.Tensor:
@@ -59,7 +60,7 @@ def extract_patches_from_pyramid(img: torch.Tensor,
     Returns:
         patches: (torch.Tensor)  :math:`(B, N, CH, PS,PS)`
     """
-    raise_error_if_laf_is_not_valid(laf)
+    KORNIA_CHECK_SHAPE(laf, ["B", "N", "2", "3"])
     if normalize_lafs_before_extraction:
         nlaf: torch.Tensor = normalize_laf(laf, img)
     else:
@@ -130,7 +131,7 @@ def custom_pyrdown(input: torch.Tensor, factor: float = 2., border_type: str = '
     kernel: torch.Tensor = _get_pyramid_gaussian_kernel()
     b, c, height, width = input.shape
     # blur image
-    x_blur: torch.Tensor = filter2D(input, kernel, border_type)
+    x_blur: torch.Tensor =  filter2d(input, kernel, border_type)
 
     # downsample.
     out: torch.Tensor = F.interpolate(x_blur, size=(int(height // factor), int(width // factor)), mode='bilinear',
