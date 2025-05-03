@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import kornia
+from kornia.filters import spatial_gradient
 
 
 class feature_extractor(nn.Module):
@@ -28,13 +28,13 @@ class handcrafted_block(nn.Module):
 
     def forward(self, x):
 
-        sobel = kornia.spatial_gradient(x)
+        sobel = spatial_gradient(x)
         dx, dy = sobel[:, :, 0, :, :], sobel[:, :, 1, :, :]
 
-        sobel_dx = kornia.spatial_gradient(dx)
+        sobel_dx = spatial_gradient(dx)
         dxx, dxy = sobel_dx[:, :, 0, :, :], sobel_dx[:, :, 1, :, :]
 
-        sobel_dy = kornia.spatial_gradient(dy)
+        sobel_dy = spatial_gradient(dy)
         dyy = sobel_dy[:, :, 1, :, :]
 
         hc_feats = torch.cat([dx, dy, dx**2., dy**2., dx*dy, dxy, dxy**2., dxx, dyy, dxx*dyy], dim=1)

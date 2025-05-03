@@ -9,7 +9,7 @@ class KeyNet(nn.Module):
     Key.Net model definition
     '''
     def __init__(self, keynet_conf):
-        super(KeyNet, self).__init__()
+        super().__init__()
 
         num_filters = keynet_conf['num_filters']
         self.num_levels = keynet_conf['num_levels']
